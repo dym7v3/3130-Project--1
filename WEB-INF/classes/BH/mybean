@@ -1,0 +1,159 @@
+package BH;
+import BH.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.ArrayList;
+import java.util.Arrays;
+import static java.util.Arrays.asList;
+import java.sql.*; 
+
+    public class mybean implements java.io.Serializable { 
+    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+    static final String DB_URL = "jdbc:mysql://localhost/cs4010";
+    static final String USER = "cs4010";
+    static final String PASS = "cs4010";
+    public String [] username = new String[5];
+    public String [] password = new String[5];
+    public int count=0;
+    public boolean added=false;
+    public mybean()
+    {
+        //Do nothing.
+    }
+    public void getting(){
+      
+        getAll();
+    }
+    
+    //This will be used to delete the acount.
+      public String delete(int acc_num)
+    {
+       try {
+       Class.forName("com.mysql.jdbc.Driver");
+       Connection conn = DriverManager.getConnection(DB_URL,USER,PASS);
+       Statement stmt = conn.createStatement();
+       String this_query="UPDATE MoyD SET account='empty', password= 'empty' WHERE  num='"+acc_num+"';";
+       stmt.executeUpdate(this_query); 
+       stmt.close();
+       conn.close();
+    
+       }
+       catch (Exception e) 
+       {
+
+      }
+       return "";
+    }
+    
+    
+    //This will be used to changes the information stored on the database. 
+    public String change(int acc_num, String acc, String pas)
+    {
+       try {
+       Class.forName("com.mysql.jdbc.Driver");
+       Connection conn = DriverManager.getConnection(DB_URL,USER,PASS);
+       Statement stmt = conn.createStatement();
+       String this_query="UPDATE MoyD SET account='"+acc+"', password= '"+pas+"' WHERE  num='"+acc_num+"';";
+       stmt.executeUpdate(this_query); 
+       stmt.close();
+       conn.close();
+    
+       }
+       catch (Exception e) {
+
+        }
+       return "";
+    }
+    
+    
+    public String set(String acc, String pas)
+    {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(DB_URL,USER,PASS);
+            Statement stmt = conn.createStatement();
+            String this_query=" SELECT account FROM MoyD;"; 
+            ResultSet rs = stmt.executeQuery(this_query);
+            while(rs.next())
+            {
+                username[0]=rs.getString("account"); 
+                if(!(username[0].equalsIgnoreCase("empty")))
+                {
+                    count++;
+                }
+            
+            }
+           	count++;
+            if(count>5)
+            {
+                username[0]="";
+                return "failed";
+            }
+            else
+            {
+            count=0;
+            this_query=" SELECT account FROM MoyD;"; 
+            rs = stmt.executeQuery(this_query);
+            while(rs.next())
+            {
+                count++;
+                username[0]=rs.getString("account"); 
+                if((username[0].equalsIgnoreCase("empty")) && !(added))
+                {
+                    
+                    this_query="UPDATE MoyD SET account='"+acc+"', password= '"+pas+"' WHERE  num='"+count+"';";  
+                    stmt.executeUpdate(this_query);
+                    added=true;
+                }
+            
+            }
+            stmt.close();
+            conn.close();
+           //this will finish execution and return back to the servlet. 
+            }
+         } 
+         catch (Exception e) {
+
+        }
+       return "";
+    }
+    
+    
+    public String getAll(){
+        try {
+           
+            Class.forName("com.mysql.jdbc.Driver"); 
+           
+            Connection conn = DriverManager.getConnection(DB_URL,USER,PASS);
+             
+            Statement stmt = conn.createStatement();
+             
+            String this_query=" SELECT account, password FROM MoyD;"; 
+            
+            ResultSet rs = stmt.executeQuery(this_query);
+            while (rs.next()) {
+                
+                username[count]=rs.getString("account");            
+                password[count]=rs.getString("password");
+                count++;
+            
+            }
+            rs.close();
+            stmt.close();
+            conn.close();
+           
+            } catch (Exception e) {
+            return "not found";
+            
+        }
+          
+       
+        return "";
+    }
+ 
+   
+
+}
+
+
